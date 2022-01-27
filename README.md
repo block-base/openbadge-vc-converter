@@ -1,5 +1,16 @@
 ## OpenBadge VC Converter
 
+### quickstart
+
+https://openbadge-vc-converter.vercel.app/
+
+use local
+
+```
+yarn
+yarn dev
+```
+
 ### developer
 
 - make branch, make pull-request, make peer review, then merge.
