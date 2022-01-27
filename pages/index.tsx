@@ -10,7 +10,6 @@ import {
   Flex,
   Image,
   Spinner,
-  Center,
 } from "@chakra-ui/react";
 import { WarningIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import QRCode from "react-qr-code";
@@ -26,12 +25,14 @@ const Home: NextPage = () => {
   const setImageAction = async (event: any) => {
     event.preventDefault();
     setStatus("loading");
+    const formData = new FormData();
+    formData.append("file", image.imageAsFile);
     const data = await fetch(
       "http://localhost:3000/api/issuer/issuance-request",
       {
         method: "post",
         headers: { "Content-Type": "multipart/form-data" },
-        body: JSON.stringify({}),
+        body: formData,
       }
     );
     const result = await data.json();
@@ -43,19 +44,11 @@ const Home: NextPage = () => {
     }
   };
 
-  const onFileChange = (e: any) => {
-    const files = e.target.files;
-    if (files.length > 0) {
-      const file = files[0];
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (!e.target) return;
-        setImage({ imageData: e.target.result });
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setImage({ imageData: null });
-    }
+  const uploadPicture = (e: any) => {
+    setImage({
+      imagePreview: URL.createObjectURL(e.target.files[0]),
+      imageAsFile: e.target.files[0],
+    });
   };
 
   return (
@@ -76,11 +69,11 @@ const Home: NextPage = () => {
                   type="file"
                   name="image"
                   onChange={(e) => {
-                    onFileChange(e);
+                    uploadPicture(e);
                   }}
                 />
-                {image?.imageData ? (
-                  <Image src={image.imageData} w="sm" alt=""></Image>
+                {image?.imagePreview ? (
+                  <Image src={image.imagePreview} w="sm" alt=""></Image>
                 ) : (
                   <></>
                 )}
@@ -102,7 +95,7 @@ const Home: NextPage = () => {
           <>
             <Flex w="full" align={"center"} direction={"column"}>
               <Image
-                src={image.imageData}
+                src={image.imagePreview}
                 width="2xs"
                 height="auto"
                 alt=""
