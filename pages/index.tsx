@@ -7,40 +7,55 @@ import {
   Container,
   Box,
   Heading,
-  InputGroup,
-  InputLeftElement,
-  Icon,
-  Input,
-  Center,
   Flex,
   Image,
+  Spinner,
+  Center,
 } from "@chakra-ui/react";
 import { WarningIcon, CheckCircleIcon } from "@chakra-ui/icons";
+import QRCode from "react-qr-code";
 
 const Home: NextPage = () => {
   const [status, setStatus] = React.useState<
     "initial" | "loading" | "verified" | "failed"
   >("initial");
 
-  const uploadPicture = () => {
-    console.log("uploadPicture");
-  };
+  const [image, setImage] = React.useState<any>();
+  const [url, setUrl] = React.useState("");
 
   const setImageAction = async (event: any) => {
     event.preventDefault();
-    //TODO: update image
-    // const data = await fetch("http://localhost:3000/upload/post", {
-    //   method: "post",
-    //   headers: { "Content-Type": "multipart/form-data" },
-    //   body: JSON.stringify({}),
-    // });
-    // const uploadedImage = await data.json();
-    // if (uploadedImage) {
-    //   console.log("Successfully uploaded image");
-    // } else {
-    //   console.log("Error Found");
-    // }
-    setStatus("verified");
+    setStatus("loading");
+    const data = await fetch(
+      "http://localhost:3000/api/issuer/issuance-request",
+      {
+        method: "post",
+        headers: { "Content-Type": "multipart/form-data" },
+        body: JSON.stringify({}),
+      }
+    );
+    const result = await data.json();
+    if (result.url) {
+      setUrl(result.url);
+      setStatus("verified");
+    } else {
+      setStatus("failed");
+    }
+  };
+
+  const onFileChange = (e: any) => {
+    const files = e.target.files;
+    if (files.length > 0) {
+      const file = files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (!e.target) return;
+        setImage({ imageData: e.target.result });
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setImage({ imageData: null });
+    }
   };
 
   return (
@@ -54,62 +69,90 @@ const Home: NextPage = () => {
         <Heading my="8">OpenBadge to ION VC Converter</Heading>
         {status == "initial" && (
           <>
-            <Text>Initial page</Text>
-            <div className="content">
+            <Text>Input your OpenBadge png/svg</Text>
+            <Box my="8">
               <form onSubmit={setImageAction}>
-                <input type="file" name="image" />
+                <input
+                  type="file"
+                  name="image"
+                  onChange={(e) => {
+                    onFileChange(e);
+                  }}
+                />
+                {image?.imageData ? (
+                  <Image src={image.imageData} w="sm" alt=""></Image>
+                ) : (
+                  <></>
+                )}
                 <br />
-                <Button type="submit" name="upload">
+                <Button
+                  my="4"
+                  w="full"
+                  colorScheme="blue"
+                  type="submit"
+                  name="upload"
+                >
                   Upload
                 </Button>
               </form>
-            </div>
-          </>
-        )}
-        {status == "loading" && (
-          <>
-            <Text>Loading</Text>
-            <Button colorScheme="blue" onClick={() => setStatus("verified")}>
-              テスト
-            </Button>
+            </Box>
           </>
         )}
         {status == "verified" && (
           <>
-            <Text>verified</Text>
-            <Flex direction={"row"}>
+            <Flex w="full" align={"center"} direction={"column"}>
               <Image
-                src={"/example-openbadge.png"}
-                width="md"
+                src={image.imageData}
+                width="2xs"
                 height="auto"
                 alt=""
               ></Image>
-              <CheckCircleIcon w={24} h={24} color="green.500" />
-            </Flex>
-            {/* <QR code></QR> */}
-            <Button colorScheme="blue" onClick={() => setStatus("failed")}>
-              テスト
-            </Button>
-          </>
-        )}
-        {status == "failed" && (
-          <Box>
-            <Center>
-              <WarningIcon w={24} h={24} color="red.500" />
-            </Center>
-            <Center>
-              <Text>Verification failed. Reason: </Text>
-            </Center>
-            <Center>
+              <CheckCircleIcon mt="8" w={24} h={24} color="green.500" />
+              <Text align="center" fontSize="lg" mt="2">
+                OpenBadge verified
+              </Text>
+              <Text fontSize="lg" mt="8">
+                Read this QR with MS Authenticator
+              </Text>
+              <Box mt="4">
+                <QRCode value={url} />
+              </Box>
               <Button
+                w="full"
                 colorScheme="blue"
                 my="4"
                 onClick={() => setStatus("initial")}
               >
                 Try again
               </Button>
-            </Center>
-          </Box>
+            </Flex>
+          </>
+        )}
+        {status == "failed" && (
+          <Flex w="full" align={"center"} direction={"column"}>
+            <WarningIcon w={24} h={24} color="red.500" />
+            <Text my="4">Verification failed. Reason: </Text>
+            <Button
+              w="full"
+              colorScheme="blue"
+              my="4"
+              onClick={() => setStatus("initial")}
+            >
+              Try again
+            </Button>
+          </Flex>
+        )}
+        {status == "loading" && (
+          <Flex w="full" align={"center"} direction={"column"}>
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="blue.500"
+              size="xl"
+            />
+            <Text mt="4">Loading...</Text>
+          </Flex>
         )}
       </Container>
     </>
