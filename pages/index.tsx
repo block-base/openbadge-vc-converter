@@ -13,42 +13,47 @@ import {
 } from "@chakra-ui/react";
 import { WarningIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import QRCode from "react-qr-code";
+import axios from "axios";
 
 const Home: NextPage = () => {
   const [status, setStatus] = React.useState<
     "initial" | "loading" | "verified" | "failed"
   >("initial");
 
-  const [image, setImage] = React.useState<any>();
+  const [image, setImage] = React.useState("");
   const [url, setUrl] = React.useState("");
 
-  const setImageAction = async (event: any) => {
+  const uploadOpenBadge = async (event: any) => {
     event.preventDefault();
     setStatus("loading");
-    const formData = new FormData();
-    formData.append("file", image.imageAsFile);
-    const data = await fetch(
-      "http://localhost:3000/api/issuer/issuance-request",
-      {
-        method: "post",
-        headers: { "Content-Type": "multipart/form-data" },
-        body: formData,
-      }
-    );
-    const result = await data.json();
-    if (result.url) {
-      setUrl(result.url);
-      setStatus("verified");
-    } else {
-      setStatus("failed");
-    }
+    axios
+      .post("/api/issuer/issuance-request", {
+        file: image,
+      })
+      .then(function (response) {
+        console.log(response.data);
+        setUrl(response.data.url);
+        setStatus("verified");
+      })
+      .catch(function (err) {
+        console.log(err);
+        setStatus("failed");
+      });
   };
 
   const uploadPicture = (e: any) => {
-    setImage({
-      imagePreview: URL.createObjectURL(e.target.files[0]),
-      imageAsFile: e.target.files[0],
-    });
+    const files = e.target.files;
+    if (files.length > 0) {
+      const file = files[0];
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        setImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setImage("");
+    }
   };
 
   return (
@@ -64,7 +69,7 @@ const Home: NextPage = () => {
           <>
             <Text>Input your OpenBadge png/svg</Text>
             <Box my="8">
-              <form onSubmit={setImageAction}>
+              <form onSubmit={uploadOpenBadge}>
                 <input
                   type="file"
                   name="image"
@@ -72,11 +77,7 @@ const Home: NextPage = () => {
                     uploadPicture(e);
                   }}
                 />
-                {image?.imagePreview ? (
-                  <Image src={image.imagePreview} w="sm" alt=""></Image>
-                ) : (
-                  <></>
-                )}
+                {image ? <Image src={image} w="sm" alt=""></Image> : <></>}
                 <br />
                 <Button
                   my="4"
@@ -94,12 +95,7 @@ const Home: NextPage = () => {
         {status == "verified" && (
           <>
             <Flex w="full" align={"center"} direction={"column"}>
-              <Image
-                src={image.imagePreview}
-                width="2xs"
-                height="auto"
-                alt=""
-              ></Image>
+              <Image src={image} width="2xs" height="auto" alt=""></Image>
               <CheckCircleIcon mt="8" w={24} h={24} color="green.500" />
               <Text align="center" fontSize="lg" mt="2">
                 OpenBadge verified
