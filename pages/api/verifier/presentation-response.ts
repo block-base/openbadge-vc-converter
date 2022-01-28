@@ -4,6 +4,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 type Data = {
   status: number;
   message: string;
+  openBadgeMetadata: any;
 };
 
 export default function handler(
@@ -13,5 +14,6 @@ export default function handler(
   res.status(200).json({
     status: 0,
     message: "ok",
+    openBadgeMetadata: {},
   });
 }
