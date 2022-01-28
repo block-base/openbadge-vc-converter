@@ -1,0 +1,25 @@
+{
+  "authority": "did:ion: THIS IS YOUR DID FROM THE VC PAGE IN AZURE PORTAL ...set at runtime...",
+  "includeQRCode": false,
+  "registration": {
+    "clientName": "Verifiable Credential Expert Sample"
+  },
+  "callback": {
+    "url": "...set at runtime...",
+    "state": "...set at runtime...",
+    "headers": {
+      "api-key": "OPTIONAL API-KEY for ISSUANCE CALLBACK API"
+    }
+  },
+  "issuance": {
+    "type": "VerifiedCredentialExpert",
+    "manifest": "CREDENTIAL URL ...set at runtime...",
+    "pin": {
+      "value": "1234",
+      "length": 4
+    },
+    "claims": {
+      "displayName": "DISPLAYNAME"
+    }
+  }
+}
