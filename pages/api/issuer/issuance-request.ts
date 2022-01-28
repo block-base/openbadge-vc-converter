@@ -48,7 +48,7 @@ export default async function handler(
     throw new Error("OpenBadge invalid");
   }
   const manifestId = await prepareIssueRequest(openBadgeMetadata);
-  const { pin, url } = await issueRequest(manifestId);
+  const { pin, url } = await issueRequest(manifestId, openBadgeMetadata);
   res.status(200).json({
     pin,
     url,
@@ -72,7 +72,7 @@ const prepareIssueRequest = async (openBadgeMetadata: any): Promise<string> => {
     "https://beta.did.msidentity.com/v1.0/f88bec5c-c13f-4f27-972f-72540d188693/verifiableCredential/contracts/CIDPROCertifiedFoundationLevel";
   return manifestId;
 };
-const issueRequest = async (manifestId: string) => {
+const issueRequest = async (manifestId: string, openBadgeMetadata: any) => {
   // TODO:
   // manifestとアクセストークンを元にazureにリクエストを投げる
   // access_tokenを取得する
@@ -94,6 +94,11 @@ const issueRequest = async (manifestId: string) => {
   console.log(`accessToken: ${accessToken}`);
 
   // issuance requestを構成する（もろもろスタティックにしている部分は後で）
+  // claims
+  // openbadge
+  const { data } = await axios.get(openBadgeMetadata.badge);
+  console.log(JSON.stringify(data));
+  issuanceConfig.issuance.claims.openbadge = JSON.stringify(data);
   issuanceConfig.registration.clientName =
     "OpenBadge to Verifiable Credentials Gateway";
   issuanceConfig.authority =
@@ -124,8 +129,7 @@ const issueRequest = async (manifestId: string) => {
   var resp = await response.json();
   // このレスポンスのurlをqrコードにする
   console.log(resp);
-
-  return { pin: 1234, url: "https://nextjs.org/docs/api-routes/introduction" };
+  return { pin: 1234, url: resp.url };
 };
 
 const validateOpenBadge = async (openBadgeMetadata: any) => {

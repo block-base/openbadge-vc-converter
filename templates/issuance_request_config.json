@@ -19,7 +19,8 @@
       "length": 4
     },
     "claims": {
-      "displayName": "DISPLAYNAME"
+      "email": "naohiro.fujie@eidentity.jp",
+      "openbadge": "...set at runtime..."
     }
   }
 }
