@@ -10,7 +10,6 @@ import {
   Heading,
   Flex,
   Image,
-  Spinner,
 } from "@chakra-ui/react";
 import { WarningIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import QRCode from "react-qr-code";
@@ -41,7 +40,7 @@ const Home: NextPage = () => {
       .then(function (response) {
         console.log(response.data);
         setMetadata(response.data.openBadgeMetadata);
-        setStatus("verified");
+        setStatus("failed");
       })
       .catch(function (err) {
         setStatus("failed");
@@ -72,8 +71,8 @@ const Home: NextPage = () => {
         </NextLink>
         {status == "initial" && (
           <>
-            <Text>Get a Verify QR Code and present your VC</Text>
-            <Box my="8">
+            <Flex w="full" align={"center"} direction={"column"}>
+              <Text>Get a Verify QR Code and present your VC</Text>
               <Button
                 w="full"
                 my="4"
@@ -85,7 +84,7 @@ const Home: NextPage = () => {
               <Box mt="4">
                 {verifyQRCodeUrl ? <QRCode value={verifyQRCodeUrl} /> : <></>}
               </Box>
-            </Box>
+            </Flex>
           </>
         )}
         {status == "verified" && (
