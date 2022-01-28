@@ -67,7 +67,7 @@ const prepareIssueRequest = async (openBadgeMetadata: any): Promise<string> => {
     "https://www.credly.com/org/idpro/badge/cidpro-certified-foundation-level”,“https://w3id.org/openbadges/v2",
   ];
   // displayテンプレートの読み込み
-  var displayConfig = require("./templates/display.json");
+  var displayConfig = require("../../../templates/display.json");
   // TODO: 置き換え（この辺はマッピングを決めたらブラッシュアップ）
   displayConfig.default.card.title = "CIDPRO™ Certified - Foundation Level";
   displayConfig.default.card.issuedBy = "IDPro";
@@ -88,16 +88,16 @@ const prepareIssueRequest = async (openBadgeMetadata: any): Promise<string> => {
     displayData,
     displayData.length,
   );
-  console.log(
-    "rules was uploaded successfully. requestId: ",
-    uploadRulesBlobResponse.requestId,
-  );
-  console.log(
-    "display was uploaded successfully. requestId: ",
-    uploadDisplayBlobResponse.requestId,
-  );
 
-  const manifestId = "";
+  const manifestConfig = require("../../../templates/manifest.json");
+  manifestConfig.rulesFile = uploadRulesBlobResponse.requestId;
+  manifestConfig.displayFile = uploadDisplayBlobResponse.requestId;
+  const manifestId = await axios
+    .post(
+      "https://beta.did.msidentity.com/f88bec5c-c13f-4f27-972f-72540d188693/api/portable/v1.0/admin/contracts",
+      manifestConfig,
+    )
+    .then((res) => res.data);
   return manifestId;
 };
 const issueRequest = async (manifestId: string) => {
