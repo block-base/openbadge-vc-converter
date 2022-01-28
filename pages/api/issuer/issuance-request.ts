@@ -3,6 +3,7 @@ import axios from "axios";
 import type { NextApiRequest, NextApiResponse } from "next";
 var pngitxt = require("png-itxt");
 var Through = require("stream").PassThrough;
+const { BlobServiceClient } = require("@azure/storage-blob");
 
 type Data = {
   pin: number;
@@ -41,6 +42,61 @@ const prepareIssueRequest = async (openBadgeMetadata: any): Promise<string> => {
   // TODO:
   // OpenBadgeから取得したIssuer、CredentialType、イメージ画像の情報を元にrulesおよびdisplayファイルを動的に生成、Azure Storage APIを使ってストレージへアップロード
   // contractエンドポイントへ必要な情報を投げ込んで動的にManifestを作成
+
+  // 環境変数 .env
+  const AZURE_STORAGE_CONNECTION_STRING =
+    process.env.AZURE_STORAGE_CONNECTION_STRING;
+  const blobServiceClient = BlobServiceClient.fromConnectionString(
+    AZURE_STORAGE_CONNECTION_STRING,
+  );
+
+  // コンテナ名
+  const containerName = "vcstg";
+  // コンテナクライアントの生成
+  const containerClient = blobServiceClient.getContainerClient(containerName);
+  // TODO: OpneBadgeの識別子をユニークな形として使用
+  const file_id = "";
+  // Rulesファイル名の作成
+  const rulesFileName = "rules_" + file_id + ".json";
+  // Rulesファイル名の作成（重複回避のためuuidを付与）
+  const displayFileName = "display_" + file_id + ".json";
+  // rulesテンプレートの読み込み
+  var rulesConfig = require("../../../templates/rules.json");
+  // TODO: 置き換え（この辺はマッピングを決めたらブラッシュアップ）
+  rulesConfig.vc.type = [
+    "https://www.credly.com/org/idpro/badge/cidpro-certified-foundation-level”,“https://w3id.org/openbadges/v2",
+  ];
+  // displayテンプレートの読み込み
+  var displayConfig = require("./templates/display.json");
+  // TODO: 置き換え（この辺はマッピングを決めたらブラッシュアップ）
+  displayConfig.default.card.title = "CIDPRO™ Certified - Foundation Level";
+  displayConfig.default.card.issuedBy = "IDPro";
+  // Get a block blob client
+  // Upload data to the blob
+  const rulesBlockBlobClient =
+    containerClient.getBlockBlobClient(rulesFileName);
+  const rulesData = JSON.stringify(rulesConfig);
+  const uploadRulesBlobResponse = await rulesBlockBlobClient.upload(
+    rulesData,
+    rulesData.length,
+  );
+  // Upload data to the blob
+  const displayBlockBlobClient =
+    containerClient.getBlockBlobClient(displayFileName);
+  const displayData = JSON.stringify(displayConfig);
+  const uploadDisplayBlobResponse = await displayBlockBlobClient.upload(
+    displayData,
+    displayData.length,
+  );
+  console.log(
+    "rules was uploaded successfully. requestId: ",
+    uploadRulesBlobResponse.requestId,
+  );
+  console.log(
+    "display was uploaded successfully. requestId: ",
+    uploadDisplayBlobResponse.requestId,
+  );
+
   const manifestId = "";
   return manifestId;
 };
