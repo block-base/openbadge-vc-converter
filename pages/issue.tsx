@@ -25,6 +25,7 @@ const Home: NextPage = () => {
   const [email, setEmail] = React.useState("");
   const [image, setImage] = React.useState("");
   const [url, setUrl] = React.useState("");
+  const [pin, setPin] = React.useState("");
 
   const handleEmailChain = (e: any) => {
     setEmail(e.target.value);
@@ -38,8 +39,10 @@ const Home: NextPage = () => {
         email,
         file: image,
       })
-      .then(function (response) {
-        setUrl(response.data.url);
+      .then(function ({ data }) {
+        const { url, pin } = data;
+        setUrl(url);
+        setPin(pin);
         setStatus("verified");
       })
       .catch(function (err) {
@@ -121,6 +124,9 @@ const Home: NextPage = () => {
               </Text>
               <Box mt="4">
                 <QRCode value={url} />
+              </Box>
+              <Box mt="4">
+                <Text>PIN: {pin}</Text>
               </Box>
               <Button
                 w="full"
