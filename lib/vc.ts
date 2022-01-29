@@ -68,7 +68,8 @@ export const prepareIssueRequest = async (
 
 export const issueRequest = async (
   manifestId: string,
-  openBadgeMetadata: any
+  openBadgeMetadata: any,
+  sessionId: string
 ) => {
   // TODO:
   // manifestとアクセストークンを元にazureにリクエストを投げる
@@ -98,9 +99,13 @@ export const issueRequest = async (
   issuanceConfig.issuance.claims.openbadge = JSON.stringify(data);
   issuanceConfig.registration.clientName = clientName;
   issuanceConfig.authority = authority;
-  issuanceConfig.callback.url = `${host}api/issuer/issuance-request-callback`;
+  //  issuanceConfig.callback.url = `${host}api/issuer/issuance-request-callback`;
+  issuanceConfig.callback.url = `https://2358-126-241-78-164.ngrok.io/api/issuer/issuance-request-callback`;
+  console.log(
+    `set issuance callback url: ${host}api/issuer/issuance-request-callback`
+  );
   // セッションidを入れてコールバック側へ引き継ぐ
-  issuanceConfig.callback.state = "123";
+  issuanceConfig.callback.state = sessionId;
   issuanceConfig.issuance.manifest = manifestId;
   issuanceConfig.issuance.type = type;
 
@@ -145,7 +150,10 @@ export const presentationRequest = async () => {
   console.log(`accessToken: ${accessToken}`);
   presentationConfig.registration.clientName = clientName;
   presentationConfig.authority = authority;
-  presentationConfig.callback.url = `${host}/api/issuer/presentation-request-callback`;
+
+  presentationConfig.callback.url =
+    "https://2358-126-241-78-164.ngrok.io/api/issuer/presentation-request-callback";
+  //  presentationConfig.callback.url = `${host}/api/issuer/presentation-request-callback`;
   // セッションidを入れてコールバック側へ引き継ぐ
   presentationConfig.callback.state = "123";
   presentationConfig.presentation.requestedCredentials[0].type =
