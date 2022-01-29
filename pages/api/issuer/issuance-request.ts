@@ -25,8 +25,6 @@ export default async function handler(
     throw new Error("OpenBadge invalid");
   }
   const manifestURL = await prepareIssueRequest(openBadgeMetadata);
-  console.log(manifestURL);
-
   const { pin, url } = await issueRequest(manifestURL, openBadgeMetadata);
   res.status(200).json({
     pin,

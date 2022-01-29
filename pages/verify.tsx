@@ -39,8 +39,8 @@ const Home: NextPage = () => {
       .get("/api/verifier/presentation-response")
       .then(function (response) {
         console.log(response.data);
-        setMetadata(response.data.openBadgeMetadata);
-        setStatus("failed");
+        // setMetadata(response.data.openBadgeMetadata);
+        // setStatus("failed");
       })
       .catch(function (err) {
         setStatus("failed");
@@ -51,6 +51,7 @@ const Home: NextPage = () => {
     axios
       .get("/api/verifier/presentation-request")
       .then(function (response) {
+        console.log("gtest");
         setverifyQRCodeUrl(response.data.url);
       })
       .catch(function (err) {
