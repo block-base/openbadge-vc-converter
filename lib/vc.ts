@@ -69,7 +69,8 @@ export const prepareIssueRequest = async (
 export const issueRequest = async (
   manifestId: string,
   openBadgeMetadata: any,
-  email: string
+  email: string,
+  sessionId: string
 ) => {
   // TODO:
   // manifestとアクセストークンを元にazureにリクエストを投げる
@@ -105,7 +106,7 @@ export const issueRequest = async (
   issuanceConfig.authority = authority;
   issuanceConfig.callback.url = `${host}api/issuer/issuance-request-callback`;
   // セッションidを入れてコールバック側へ引き継ぐ
-  issuanceConfig.callback.state = "123";
+  issuanceConfig.callback.state = sessionId;
   issuanceConfig.issuance.manifest = manifestId;
   issuanceConfig.issuance.type = type;
 
