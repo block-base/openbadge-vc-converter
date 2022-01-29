@@ -27,13 +27,8 @@ export default async function handler(
     throw new Error("OpenBadge invalid");
   }
 
-  // requestからsessionの取得
-  // const session = await getSession(req, res);
-  // console.log(session.id);
-
   await withSession(req, res);
-
-
+  console.log(req.session.id);
 
   const manifestURL = await prepareIssueRequest(openBadgeMetadata);
   const { pin, url } = await issueRequest(

@@ -1,5 +1,5 @@
 import React from "react";
-import type { NextPage } from "next";
+import type { NextPage, GetServerSideProps } from "next";
 import Head from "next/head";
 import NextLink from "next/link";
 import {
@@ -16,24 +16,28 @@ import {
 import { WarningIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import QRCode from "react-qr-code";
 import axios from "axios";
+import { QRCodeStatus, RequestStatus } from "../types/status";
+import { withSession } from "../lib/session";
 
 const Home: NextPage = () => {
-  const [status, setStatus] = React.useState<
-    "initial" | "loading" | "verified" | "failed"
-  >("initial");
+  const [requestStatus, setRequestStatus] =
+    React.useState<RequestStatus>("waiting");
+
+  const [qrCodeStatus, setQrCodeStatus] =
+    React.useState<QRCodeStatus>("waiting");
 
   const [email, setEmail] = React.useState("");
   const [image, setImage] = React.useState("");
   const [url, setUrl] = React.useState("");
   const [pin, setPin] = React.useState("");
 
-  const handleEmailChain = (e: any) => {
+  const handleEmailChange = (e: any) => {
     setEmail(e.target.value);
   };
 
-  const uploadOpenBadge = async (event: any) => {
+  const requestIssuance = async (event: any) => {
     event.preventDefault();
-    setStatus("loading");
+    setRequestStatus("loading");
     axios
       .post("/api/issuer/issuance-request", {
         email,
@@ -43,12 +47,27 @@ const Home: NextPage = () => {
         const { url, pin } = data;
         setUrl(url);
         setPin(pin);
-        setStatus("verified");
+        setRequestStatus("requested");
+        const intervalMs = 5000;
+        setInterval(() => {
+          getIssuanceResponse();
+        }, intervalMs);
       })
       .catch(function (err) {
         console.error(err);
-        setStatus("failed");
+        setRequestStatus("failed");
       });
+  };
+
+  const getIssuanceResponse = () => {
+    axios.get("/api/issuer/issuance-response").then(function ({ data }) {
+      const { status } = data;
+      if (status === "request_retrieved") {
+        setQrCodeStatus("scanned");
+      } else if (status === "issuance_successful") {
+        setQrCodeStatus("success");
+      }
+    });
   };
 
   const uploadPicture = (e: any) => {
@@ -77,16 +96,16 @@ const Home: NextPage = () => {
         <NextLink href={"/"}>
           <Heading my="8">OpenBadge to ION VC Converter</Heading>
         </NextLink>
-        {status == "initial" && (
+        {requestStatus == "waiting" && (
           <>
             <Text>Input your OpenBadge png/svg</Text>
             <Box my="8">
-              <form onSubmit={uploadOpenBadge}>
+              <form onSubmit={requestIssuance}>
                 <Input
                   mb="8"
                   value={email}
                   placeholder="email"
-                  onChange={handleEmailChain}
+                  onChange={handleEmailChange}
                 />
 
                 <input
@@ -111,49 +130,7 @@ const Home: NextPage = () => {
             </Box>
           </>
         )}
-        {status == "verified" && (
-          <>
-            <Flex w="full" align={"center"} direction={"column"}>
-              <Image src={image} width="2xs" height="auto" alt=""></Image>
-              <CheckCircleIcon mt="8" w={24} h={24} color="green.500" />
-              <Text align="center" fontSize="lg" mt="2">
-                OpenBadge verified
-              </Text>
-              <Text fontSize="lg" mt="8">
-                Read this QR with MS Authenticator
-              </Text>
-              <Box mt="4">
-                <QRCode value={url} />
-              </Box>
-              <Box mt="4">
-                <Text>PIN: {pin}</Text>
-              </Box>
-              <Button
-                w="full"
-                colorScheme="blue"
-                my="4"
-                onClick={() => setStatus("initial")}
-              >
-                Try again
-              </Button>
-            </Flex>
-          </>
-        )}
-        {status == "failed" && (
-          <Flex w="full" align={"center"} direction={"column"}>
-            <WarningIcon w={24} h={24} color="red.500" />
-            <Text my="4">Verification failed. Reason: </Text>
-            <Button
-              w="full"
-              colorScheme="blue"
-              my="4"
-              onClick={() => setStatus("initial")}
-            >
-              Try again
-            </Button>
-          </Flex>
-        )}
-        {status == "loading" && (
+        {requestStatus == "loading" && (
           <Flex w="full" align={"center"} direction={"column"}>
             <Spinner
               thickness="4px"
@@ -164,6 +141,54 @@ const Home: NextPage = () => {
             />
             <Text mt="4">Loading...</Text>
           </Flex>
+        )}
+        {requestStatus == "failed" && (
+          <Flex w="full" align={"center"} direction={"column"}>
+            <WarningIcon w={24} h={24} color="red.500" />
+            <Text my="4">Verification failed. Reason: </Text>
+            <Button
+              w="full"
+              colorScheme="blue"
+              my="4"
+              onClick={() => setRequestStatus("waiting")}
+            >
+              Try again
+            </Button>
+          </Flex>
+        )}
+        {requestStatus == "requested" && (
+          <>
+            <Flex w="full" align={"center"} direction={"column"}>
+              <Image src={image} width="2xs" height="auto" alt=""></Image>
+              <CheckCircleIcon mt="8" w={24} h={24} color="green.500" />
+              <Text align="center" fontSize="lg" mt="2">
+                OpenBadge verified
+              </Text>
+              <Text fontSize="lg" mt="8">
+                Read this QR with MS Authenticator
+              </Text>
+              {qrCodeStatus === "waiting" && (
+                <>
+                  <Box mt="4">
+                    <QRCode value={url} />
+                  </Box>
+                  <Box mt="4">
+                    <Text>PIN: {pin}</Text>
+                  </Box>
+                </>
+              )}
+              {qrCodeStatus === "scanned" && (
+                <Text fontSize="lg" mt="8">
+                  Scanned
+                </Text>
+              )}
+              {qrCodeStatus === "success" && (
+                <Text fontSize="lg" mt="8">
+                  Issued!!
+                </Text>
+              )}
+            </Flex>
+          </>
         )}
       </Container>
     </>

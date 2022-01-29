@@ -10,51 +10,50 @@ import {
   Heading,
   Flex,
   Image,
+  Spinner,
 } from "@chakra-ui/react";
 import { WarningIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import QRCode from "react-qr-code";
 import axios from "axios";
+import { QRCodeStatus, RequestStatus } from "../types/status";
 
 const Home: NextPage = () => {
-  const [status, setStatus] = React.useState<
-    "initial" | "loading" | "verified" | "failed"
-  >("initial");
+  const [requestStatus, setRequestStatus] =
+    React.useState<RequestStatus>("waiting");
 
-  const [verifyQRCodeUrl, setverifyQRCodeUrl] = React.useState("");
+  const [qrCodeStatus, setQrCodeStatus] =
+    React.useState<QRCodeStatus>("waiting");
+
+  const [url, setUrl] = React.useState("");
   const [metadata, setMetadata] = React.useState<any>();
 
-  const intervalMs = 10000;
-
-  React.useEffect(() => {
-    const intervalId = setInterval(() => {
-      getPresentationResponse();
-    }, intervalMs);
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
-
   const getPresentationResponse = () => {
-    axios
-      .get("/api/verifier/presentation-response")
-      .then(function (response) {
-        console.log(response.data);
-        // setMetadata(response.data.openBadgeMetadata);
-        // setStatus("failed");
-      })
-      .catch(function (err) {
-        setStatus("failed");
-      });
+    axios.get("/api/verifier/presentation-response").then(function ({ data }) {
+      const { status } = data;
+      console.log(status);
+      if (status === "request_retrieved") {
+        setQrCodeStatus("scanned");
+      } else if (status === "presentation_successful") {
+        setQrCodeStatus("success");
+      }
+    });
   };
 
-  const getVerifyQRCode = async () => {
+  const requestPresentation = async () => {
+    setRequestStatus("loading");
     axios
       .get("/api/verifier/presentation-request")
-      .then(function (response) {
-        setverifyQRCodeUrl(response.data.url);
+      .then(function ({ data }) {
+        const { url } = data;
+        setUrl(url);
+        setRequestStatus("requested");
+        const intervalMs = 5000;
+        setInterval(() => {
+          getPresentationResponse();
+        }, intervalMs);
       })
       .catch(function (err) {
-        setStatus("failed");
+        setRequestStatus("failed");
       });
   };
 
@@ -69,7 +68,7 @@ const Home: NextPage = () => {
         <NextLink href={"/"}>
           <Heading my="8">OpenBadge to ION VC Converter</Heading>
         </NextLink>
-        {status == "initial" && (
+        {requestStatus == "waiting" && (
           <>
             <Flex w="full" align={"center"} direction={"column"}>
               <Text>Get a Verify QR Code and present your VC</Text>
@@ -77,45 +76,26 @@ const Home: NextPage = () => {
                 w="full"
                 my="4"
                 colorScheme="teal"
-                onClick={() => getVerifyQRCode()}
+                onClick={() => requestPresentation()}
               >
                 Get a Verify QR Code
               </Button>
-              <Box mt="4">
-                {verifyQRCodeUrl ? <QRCode value={verifyQRCodeUrl} /> : <></>}
-              </Box>
             </Flex>
           </>
         )}
-        {status == "verified" && (
-          <>
-            <Flex w="full" align={"center"} direction={"column"}>
-              {metadata.image.id ? (
-                <Image
-                  src={metadata.image.id}
-                  width="2xs"
-                  height="auto"
-                  alt=""
-                ></Image>
-              ) : (
-                <></>
-              )}
-              <CheckCircleIcon mt="8" w={24} h={24} color="green.500" />
-              <Text align="center" fontSize="lg" mt="2">
-                Credential Verified
-              </Text>
-              <Button
-                w="full"
-                colorScheme="teal"
-                my="4"
-                onClick={() => setStatus("initial")}
-              >
-                Try again
-              </Button>
-            </Flex>
-          </>
+        {requestStatus == "loading" && (
+          <Flex w="full" align={"center"} direction={"column"}>
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="blue.500"
+              size="xl"
+            />
+            <Text mt="4">Loading...</Text>
+          </Flex>
         )}
-        {status == "failed" && (
+        {requestStatus == "failed" && (
           <Flex w="full" align={"center"} direction={"column"}>
             <WarningIcon w={24} h={24} color="red.500" />
             <Text my="4">Verification failed. Reason: </Text>
@@ -123,11 +103,45 @@ const Home: NextPage = () => {
               w="full"
               colorScheme="teal"
               my="4"
-              onClick={() => setStatus("initial")}
+              onClick={() => setRequestStatus("waiting")}
             >
               Try again
             </Button>
           </Flex>
+        )}
+        {requestStatus == "requested" && (
+          <>
+            {qrCodeStatus === "waiting" && (
+              <>
+                <Box mt="4">
+                  <QRCode value={url} />
+                </Box>
+              </>
+            )}
+            {qrCodeStatus === "scanned" && (
+              <Text fontSize="lg" mt="8">
+                Scanned
+              </Text>
+            )}
+            {qrCodeStatus === "success" && (
+              <Flex w="full" align={"center"} direction={"column"}>
+                {/* {metadata.image.id ? (
+                  <Image
+                    src={metadata.image.id}
+                    width="2xs"
+                    height="auto"
+                    alt=""
+                  ></Image>
+                ) : (
+                  <></>
+                )} */}
+                <CheckCircleIcon mt="8" w={24} h={24} color="green.500" />
+                <Text align="center" fontSize="lg" mt="2">
+                  Credential Verified
+                </Text>
+              </Flex>
+            )}
+          </>
         )}
       </Container>
     </>
