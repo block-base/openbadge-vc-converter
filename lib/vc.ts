@@ -90,11 +90,14 @@ export const issueRequest = async (
     //   return;
   }
 
+  const pin = Math.floor(1000 + Math.random() * 9000);
+
   // issuance requestを構成する（もろもろスタティックにしている部分は後で）
   // claims
   // openbadge
   const { data } = await axios.get(openBadgeMetadata.badge);
 
+  issuanceConfig.issuance.pin.value = pin.toString();
   issuanceConfig.issuance.claims.email = email;
   issuanceConfig.issuance.claims.openbadge = JSON.stringify(data);
 
@@ -120,8 +123,8 @@ export const issueRequest = async (
 
   const client_api_request_endpoint = `https://beta.did.msidentity.com/v1.0/f88bec5c-c13f-4f27-972f-72540d188693/verifiablecredentials/request`;
   const response = await fetch(client_api_request_endpoint, fetchOptions);
-  const resp = await response.json();
-  return { pin: 1234, url: resp.url };
+  const { url } = await response.json();
+  return { pin, url };
 };
 
 export const presentationRequest = async () => {
