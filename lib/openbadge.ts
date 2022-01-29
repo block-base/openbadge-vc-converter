@@ -1,5 +1,10 @@
-var pngitxt = require("png-itxt");
-var Through = require("stream").PassThrough;
+import crypto from "crypto";
+import axios from "axios";
+const pngitxt = require("png-itxt");
+const Through = require("stream").PassThrough;
+
+const openBadgeVerifierURL =
+  "https://openbadgesvalidator.imsglobal.org/results";
 
 export const extractOpenBadgeMetadataFromImage = (imageString: string) => {
   const file = Buffer.from(imageString, "base64");
@@ -17,9 +22,28 @@ export const extractOpenBadgeMetadataFromImage = (imageString: string) => {
   });
 };
 
-export const validateOpenBadge = async (openBadgeMetadata: any) => {
-  // TODO:
-  // OpenBadgeのvalidateをする
-
-  return true;
+export const validateOpenBadge = async (
+  email: string,
+  openBadgeMetadata: any
+) => {
+  const [, expectedEmailHash] = openBadgeMetadata.recipient.identity.split("$");
+  const inputEmailHash = crypto
+    .createHash("sha256")
+    .update(email)
+    .digest("hex");
+  if (inputEmailHash !== expectedEmailHash) {
+    return false;
+  }
+  const { data } = await axios.post(
+    openBadgeVerifierURL,
+    {
+      data: JSON.stringify(openBadgeMetadata),
+    },
+    {
+      headers: {
+        Accept: "application/json",
+      },
+    }
+  );
+  return data.report.valid;
 };

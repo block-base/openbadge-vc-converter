@@ -51,7 +51,6 @@ const Home: NextPage = () => {
     axios
       .get("/api/verifier/presentation-request")
       .then(function (response) {
-        console.log("gtest");
         setverifyQRCodeUrl(response.data.url);
       })
       .catch(function (err) {

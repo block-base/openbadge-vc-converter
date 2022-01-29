@@ -10,6 +10,7 @@ import {
   Heading,
   Flex,
   Image,
+  Input,
   Spinner,
 } from "@chakra-ui/react";
 import { WarningIcon, CheckCircleIcon } from "@chakra-ui/icons";
@@ -21,23 +22,31 @@ const Home: NextPage = () => {
     "initial" | "loading" | "verified" | "failed"
   >("initial");
 
+  const [email, setEmail] = React.useState("");
   const [image, setImage] = React.useState("");
   const [url, setUrl] = React.useState("");
+  const [pin, setPin] = React.useState("");
+
+  const handleEmailChain = (e: any) => {
+    setEmail(e.target.value);
+  };
 
   const uploadOpenBadge = async (event: any) => {
     event.preventDefault();
     setStatus("loading");
     axios
       .post("/api/issuer/issuance-request", {
+        email,
         file: image,
       })
-      .then(function (response) {
-        console.log(response.data);
-        setUrl(response.data.url);
+      .then(function ({ data }) {
+        const { url, pin } = data;
+        setUrl(url);
+        setPin(pin);
         setStatus("verified");
       })
       .catch(function (err) {
-        console.log(err);
+        console.error(err);
         setStatus("failed");
       });
   };
@@ -73,6 +82,13 @@ const Home: NextPage = () => {
             <Text>Input your OpenBadge png/svg</Text>
             <Box my="8">
               <form onSubmit={uploadOpenBadge}>
+                <Input
+                  mb="8"
+                  value={email}
+                  placeholder="email"
+                  onChange={handleEmailChain}
+                />
+
                 <input
                   type="file"
                   name="image"
@@ -108,6 +124,9 @@ const Home: NextPage = () => {
               </Text>
               <Box mt="4">
                 <QRCode value={url} />
+              </Box>
+              <Box mt="4">
+                <Text>PIN: {pin}</Text>
               </Box>
               <Button
                 w="full"

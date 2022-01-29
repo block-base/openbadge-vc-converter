@@ -69,6 +69,7 @@ export const prepareIssueRequest = async (
 export const issueRequest = async (
   manifestId: string,
   openBadgeMetadata: any,
+  email: string,
   sessionId: string
 ) => {
   // TODO:
@@ -89,14 +90,18 @@ export const issueRequest = async (
     //     });
     //   return;
   }
-  console.log(`accessToken: ${accessToken}`);
+
+  const pin = Math.floor(1000 + Math.random() * 9000);
 
   // issuance requestを構成する（もろもろスタティックにしている部分は後で）
   // claims
   // openbadge
   const { data } = await axios.get(openBadgeMetadata.badge);
-  console.log(JSON.stringify(data));
+
+  issuanceConfig.issuance.pin.value = pin.toString();
+  issuanceConfig.issuance.claims.email = email;
   issuanceConfig.issuance.claims.openbadge = JSON.stringify(data);
+
   issuanceConfig.registration.clientName = clientName;
   issuanceConfig.authority = authority;
   issuanceConfig.callback.url = `${host}api/issuer/issuance-request-callback`;
@@ -105,11 +110,7 @@ export const issueRequest = async (
   issuanceConfig.issuance.manifest = manifestId;
   issuanceConfig.issuance.type = type;
 
-  console.log(issuanceConfig);
-
   const payload = JSON.stringify(issuanceConfig);
-
-  console.log(issuanceConfig);
 
   const fetchOptions = {
     method: "POST",
@@ -120,15 +121,11 @@ export const issueRequest = async (
       Authorization: `Bearer ${accessToken}`,
     },
   };
-  console.log(`payload : ${payload}`);
 
   const client_api_request_endpoint = `https://beta.did.msidentity.com/v1.0/f88bec5c-c13f-4f27-972f-72540d188693/verifiablecredentials/request`;
   const response = await fetch(client_api_request_endpoint, fetchOptions);
-  const resp = await response.json();
-  // このレスポンスのurlをqrコードにする
-  console.log(resp);
-
-  return { pin: 1234, url: resp.url };
+  const { url } = await response.json();
+  return { pin, url };
 };
 
 export const presentationRequest = async () => {
@@ -143,7 +140,6 @@ export const presentationRequest = async () => {
   } catch {
     console.log("failed to get access token");
   }
-  console.log(`accessToken: ${accessToken}`);
   presentationConfig.registration.clientName = clientName;
   presentationConfig.authority = authority;
   presentationConfig.callback.url = `${host}/api/issuer/presentation-request-callback`;
@@ -154,8 +150,6 @@ export const presentationRequest = async () => {
   presentationConfig.presentation.requestedCredentials[0].acceptedIssuers = [
     authority,
   ];
-
-  console.log(presentationConfig);
   const payload = JSON.stringify(presentationConfig);
 
   const fetchOptions = {
@@ -170,6 +164,5 @@ export const presentationRequest = async () => {
   const client_api_request_endpoint = `https://beta.did.msidentity.com/v1.0/f88bec5c-c13f-4f27-972f-72540d188693/verifiablecredentials/request`;
   const response = await fetch(client_api_request_endpoint, fetchOptions);
   const resp = await response.json();
-  console.log(resp);
   return { url: resp.url };
 };
