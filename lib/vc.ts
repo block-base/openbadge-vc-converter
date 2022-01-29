@@ -7,6 +7,7 @@ const authority =
   "did:ion:EiDJ1gcjpBDiQGqiDoPZWC9V-szF9x_1wOMj04hUMNY_Eg:eyJkZWx0YSI6eyJwYXRjaGVzIjpbeyJhY3Rpb24iOiJyZXBsYWNlIiwiZG9jdW1lbnQiOnsicHVibGljS2V5cyI6W3siaWQiOiJzaWdfYmRhNjJiN2QiLCJwdWJsaWNLZXlKd2siOnsiY3J2Ijoic2VjcDI1NmsxIiwia3R5IjoiRUMiLCJ4IjoicmVzNm4za1FMVFUyYXZFZWdrRE5kQmJKOUVIVmZ0em1XMnVoY1RKaUx5USIsInkiOiJ4WjZGWGE1S25ZbVo4MFYxSkQzZDdsZFlYQUxMNGhtUlg3U3JtU2d0UElFIn0sInB1cnBvc2VzIjpbImF1dGhlbnRpY2F0aW9uIiwiYXNzZXJ0aW9uTWV0aG9kIl0sInR5cGUiOiJFY2RzYVNlY3AyNTZrMVZlcmlmaWNhdGlvbktleTIwMTkifV0sInNlcnZpY2VzIjpbeyJpZCI6ImxpbmtlZGRvbWFpbnMiLCJzZXJ2aWNlRW5kcG9pbnQiOnsib3JpZ2lucyI6WyJodHRwczovL29wZW5iYWRnZS12Yy1jb252ZXJ0ZXIudmVyY2VsLmFwcC8iXX0sInR5cGUiOiJMaW5rZWREb21haW5zIn0seyJpZCI6Imh1YiIsInNlcnZpY2VFbmRwb2ludCI6eyJpbnN0YW5jZXMiOlsiaHR0cHM6Ly9iZXRhLmh1Yi5tc2lkZW50aXR5LmNvbS92MS4wL2Y4OGJlYzVjLWMxM2YtNGYyNy05NzJmLTcyNTQwZDE4ODY5MyJdfSwidHlwZSI6IklkZW50aXR5SHViIn1dfX1dLCJ1cGRhdGVDb21taXRtZW50IjoiRWlBOVNNS2xCazdUbm9yUDJ2cEkzaVg1eUx2M2FIM0trbWR2WEpFRmxWU3ZVUSJ9LCJzdWZmaXhEYXRhIjp7ImRlbHRhSGFzaCI6IkVpQXR1QnhLWXlnclA4NDk0ZEJ0WXRpY3QzcVJQYWF5a0tTSjNIWi15dWZiOWciLCJyZWNvdmVyeUNvbW1pdG1lbnQiOiJFaUNZUGlaUEVvZVhxYTBLaXNZREpOekl3VUpZRUFrXzQxbERkdDFOSlI2NFFRIn19";
 
 const host = "https://openbadge-vc-converter.vercel.app/";
+
 const clientName = "OpenBadge to Verifiable Credentials Gateway";
 const type =
   '["https://www.credly.com/org/idpro/badge/cidpro-certified-foundation-level","https://w3id.org/openbadges/v2"]';
@@ -145,8 +146,7 @@ export const presentationRequest = async () => {
   presentationConfig.callback.url = `${host}api/verifier/presentation-request-callback`;
   // セッションidを入れてコールバック側へ引き継ぐ
   presentationConfig.callback.state = "123";
-  presentationConfig.presentation.requestedCredentials[0].type =
-    "https://w3id.org/openbadges/v2";
+  presentationConfig.presentation.requestedCredentials[0].type = "OpenBadgeV2";
   presentationConfig.presentation.requestedCredentials[0].acceptedIssuers = [
     authority,
   ];
