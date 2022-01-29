@@ -1,6 +1,15 @@
 import axios from "axios";
 import manifestTemlate from "../templates/manifest.json";
 import issuanceConfig from "../templates/issuance_request_config.json";
+import presentationConfig from "../templates/presentation_request_config.json";
+
+const authority =
+  "did:ion:EiDJ1gcjpBDiQGqiDoPZWC9V-szF9x_1wOMj04hUMNY_Eg:eyJkZWx0YSI6eyJwYXRjaGVzIjpbeyJhY3Rpb24iOiJyZXBsYWNlIiwiZG9jdW1lbnQiOnsicHVibGljS2V5cyI6W3siaWQiOiJzaWdfYmRhNjJiN2QiLCJwdWJsaWNLZXlKd2siOnsiY3J2Ijoic2VjcDI1NmsxIiwia3R5IjoiRUMiLCJ4IjoicmVzNm4za1FMVFUyYXZFZWdrRE5kQmJKOUVIVmZ0em1XMnVoY1RKaUx5USIsInkiOiJ4WjZGWGE1S25ZbVo4MFYxSkQzZDdsZFlYQUxMNGhtUlg3U3JtU2d0UElFIn0sInB1cnBvc2VzIjpbImF1dGhlbnRpY2F0aW9uIiwiYXNzZXJ0aW9uTWV0aG9kIl0sInR5cGUiOiJFY2RzYVNlY3AyNTZrMVZlcmlmaWNhdGlvbktleTIwMTkifV0sInNlcnZpY2VzIjpbeyJpZCI6ImxpbmtlZGRvbWFpbnMiLCJzZXJ2aWNlRW5kcG9pbnQiOnsib3JpZ2lucyI6WyJodHRwczovL29wZW5iYWRnZS12Yy1jb252ZXJ0ZXIudmVyY2VsLmFwcC8iXX0sInR5cGUiOiJMaW5rZWREb21haW5zIn0seyJpZCI6Imh1YiIsInNlcnZpY2VFbmRwb2ludCI6eyJpbnN0YW5jZXMiOlsiaHR0cHM6Ly9iZXRhLmh1Yi5tc2lkZW50aXR5LmNvbS92MS4wL2Y4OGJlYzVjLWMxM2YtNGYyNy05NzJmLTcyNTQwZDE4ODY5MyJdfSwidHlwZSI6IklkZW50aXR5SHViIn1dfX1dLCJ1cGRhdGVDb21taXRtZW50IjoiRWlBOVNNS2xCazdUbm9yUDJ2cEkzaVg1eUx2M2FIM0trbWR2WEpFRmxWU3ZVUSJ9LCJzdWZmaXhEYXRhIjp7ImRlbHRhSGFzaCI6IkVpQXR1QnhLWXlnclA4NDk0ZEJ0WXRpY3QzcVJQYWF5a0tTSjNIWi15dWZiOWciLCJyZWNvdmVyeUNvbW1pdG1lbnQiOiJFaUNZUGlaUEVvZVhxYTBLaXNZREpOekl3VUpZRUFrXzQxbERkdDFOSlI2NFFRIn19";
+
+const host = "https://openbadge-vc-converter.vercel.app/";
+const clientName = "OpenBadge to Verifiable Credentials Gateway";
+const type =
+  '["https://www.credly.com/org/idpro/badge/cidpro-certified-foundation-level","https://w3id.org/openbadges/v2"]';
 
 const msal = require("@azure/msal-node");
 
@@ -64,7 +73,7 @@ export const issueRequest = async (
   // TODO:
   // manifestとアクセストークンを元にazureにリクエストを投げる
   // access_tokenを取得する
-  var accessToken = "";
+  let accessToken = "";
   try {
     const result = await msalCca.acquireTokenByClientCredential(
       msalClientCredentialRequest
@@ -87,20 +96,20 @@ export const issueRequest = async (
   const { data } = await axios.get(openBadgeMetadata.badge);
   console.log(JSON.stringify(data));
   issuanceConfig.issuance.claims.openbadge = JSON.stringify(data);
-  issuanceConfig.registration.clientName =
-    "OpenBadge to Verifiable Credentials Gateway";
-  issuanceConfig.authority =
-    "did:ion:EiDJ1gcjpBDiQGqiDoPZWC9V-szF9x_1wOMj04hUMNY_Eg:eyJkZWx0YSI6eyJwYXRjaGVzIjpbeyJhY3Rpb24iOiJyZXBsYWNlIiwiZG9jdW1lbnQiOnsicHVibGljS2V5cyI6W3siaWQiOiJzaWdfYmRhNjJiN2QiLCJwdWJsaWNLZXlKd2siOnsiY3J2Ijoic2VjcDI1NmsxIiwia3R5IjoiRUMiLCJ4IjoicmVzNm4za1FMVFUyYXZFZWdrRE5kQmJKOUVIVmZ0em1XMnVoY1RKaUx5USIsInkiOiJ4WjZGWGE1S25ZbVo4MFYxSkQzZDdsZFlYQUxMNGhtUlg3U3JtU2d0UElFIn0sInB1cnBvc2VzIjpbImF1dGhlbnRpY2F0aW9uIiwiYXNzZXJ0aW9uTWV0aG9kIl0sInR5cGUiOiJFY2RzYVNlY3AyNTZrMVZlcmlmaWNhdGlvbktleTIwMTkifV0sInNlcnZpY2VzIjpbeyJpZCI6ImxpbmtlZGRvbWFpbnMiLCJzZXJ2aWNlRW5kcG9pbnQiOnsib3JpZ2lucyI6WyJodHRwczovL29wZW5iYWRnZS12Yy1jb252ZXJ0ZXIudmVyY2VsLmFwcC8iXX0sInR5cGUiOiJMaW5rZWREb21haW5zIn0seyJpZCI6Imh1YiIsInNlcnZpY2VFbmRwb2ludCI6eyJpbnN0YW5jZXMiOlsiaHR0cHM6Ly9iZXRhLmh1Yi5tc2lkZW50aXR5LmNvbS92MS4wL2Y4OGJlYzVjLWMxM2YtNGYyNy05NzJmLTcyNTQwZDE4ODY5MyJdfSwidHlwZSI6IklkZW50aXR5SHViIn1dfX1dLCJ1cGRhdGVDb21taXRtZW50IjoiRWlBOVNNS2xCazdUbm9yUDJ2cEkzaVg1eUx2M2FIM0trbWR2WEpFRmxWU3ZVUSJ9LCJzdWZmaXhEYXRhIjp7ImRlbHRhSGFzaCI6IkVpQXR1QnhLWXlnclA4NDk0ZEJ0WXRpY3QzcVJQYWF5a0tTSjNIWi15dWZiOWciLCJyZWNvdmVyeUNvbW1pdG1lbnQiOiJFaUNZUGlaUEVvZVhxYTBLaXNZREpOekl3VUpZRUFrXzQxbERkdDFOSlI2NFFRIn19";
-  issuanceConfig.callback.url = `https://www.google.com/api/issuer/issuance-request-callback`;
+  issuanceConfig.registration.clientName = clientName;
+  issuanceConfig.authority = authority;
+  issuanceConfig.callback.url = `${host}api/issuer/issuance-request-callback`;
   // セッションidを入れてコールバック側へ引き継ぐ
   issuanceConfig.callback.state = "123";
   issuanceConfig.issuance.manifest = manifestId;
-  issuanceConfig.issuance.type =
-    '["https://www.credly.com/org/idpro/badge/cidpro-certified-foundation-level","https://w3id.org/openbadges/v2"]';
+  issuanceConfig.issuance.type = type;
 
   console.log(issuanceConfig);
 
-  var payload = JSON.stringify(issuanceConfig);
+  const payload = JSON.stringify(issuanceConfig);
+
+  console.log(issuanceConfig);
+
   const fetchOptions = {
     method: "POST",
     body: payload,
@@ -112,11 +121,53 @@ export const issueRequest = async (
   };
   console.log(`payload : ${payload}`);
 
-  var client_api_request_endpoint = `https://beta.did.msidentity.com/v1.0/f88bec5c-c13f-4f27-972f-72540d188693/verifiablecredentials/request`;
+  const client_api_request_endpoint = `https://beta.did.msidentity.com/v1.0/f88bec5c-c13f-4f27-972f-72540d188693/verifiablecredentials/request`;
   const response = await fetch(client_api_request_endpoint, fetchOptions);
-  var resp = await response.json();
+  const resp = await response.json();
   // このレスポンスのurlをqrコードにする
   console.log(resp);
 
   return { pin: 1234, url: resp.url };
+};
+
+export const presentationRequest = async () => {
+  let accessToken = "";
+  try {
+    const result = await msalCca.acquireTokenByClientCredential(
+      msalClientCredentialRequest
+    );
+    if (result) {
+      accessToken = result.accessToken;
+    }
+  } catch {
+    console.log("failed to get access token");
+  }
+  console.log(`accessToken: ${accessToken}`);
+  presentationConfig.registration.clientName = clientName;
+  presentationConfig.authority = authority;
+  presentationConfig.callback.url = `${host}/api/issuer/presentation-request-callback`;
+  // セッションidを入れてコールバック側へ引き継ぐ
+  presentationConfig.callback.state = "123";
+  presentationConfig.presentation.requestedCredentials[0].type = type;
+  presentationConfig.presentation.requestedCredentials[0].acceptedIssuers = [
+    authority,
+  ];
+
+  console.log(presentationConfig);
+  const payload = JSON.stringify(presentationConfig);
+
+  const fetchOptions = {
+    method: "POST",
+    body: payload,
+    headers: {
+      "Content-Type": "application/json",
+      "Content-Length": payload.length.toString(),
+      Authorization: `Bearer ${accessToken}`,
+    },
+  };
+  const client_api_request_endpoint = `https://beta.did.msidentity.com/v1.0/f88bec5c-c13f-4f27-972f-72540d188693/verifiablecredentials/request`;
+  const response = await fetch(client_api_request_endpoint, fetchOptions);
+  const resp = await response.json();
+  console.log(resp);
+  return { url: resp.url };
 };

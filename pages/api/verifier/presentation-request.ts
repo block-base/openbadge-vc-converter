@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { presentationRequest } from "../../../lib/vc";
 
 type Data = {
-  pin: number;
   url: string;
 };
 
@@ -9,8 +9,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
+  const { url } = await presentationRequest();
   res.status(200).json({
-    pin: 1234,
-    url: "https://nextjs.org/docs/api-routes/introduction",
+    url,
   });
 }

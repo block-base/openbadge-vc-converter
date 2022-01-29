@@ -2,7 +2,7 @@
   "authority": "did:ion: THIS IS YOUR DID FROM THE VC PAGE IN AZURE PORTAL ...set at runtime...",
   "includeQRCode": false,
   "registration": {
-    "clientName": "Verifiable Credential Expert Sample"
+    "clientName": "...set at runtime..."
   },
   "callback": {
     "url": "...set at runtime...",
@@ -12,7 +12,7 @@
     }
   },
   "issuance": {
-    "type": "VerifiedCredentialExpert",
+    "type": "...set at runtime...",
     "manifest": "CREDENTIAL URL ...set at runtime...",
     "pin": {
       "value": "1234",
