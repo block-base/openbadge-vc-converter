@@ -32,12 +32,11 @@ const Home: NextPage = () => {
         file: image,
       })
       .then(function (response) {
-        console.log(response.data);
         setUrl(response.data.url);
         setStatus("verified");
       })
       .catch(function (err) {
-        console.log(err);
+        console.error(err);
         setStatus("failed");
       });
   };

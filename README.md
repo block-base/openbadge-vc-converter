@@ -11,6 +11,15 @@ yarn
 yarn dev
 ```
 
+## Note
+
+### OpenBadge Verification
+
+- using following API for the OpenBadge verification
+  - https://openbadgesvalidator.imsglobal.org/results
+- Check following document for the detail
+  - https://github.com/IMSGlobal/openbadges-validator-core
+
 ### developer
 
 - make branch, make pull-request, make peer review, then merge.
