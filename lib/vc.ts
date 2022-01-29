@@ -148,7 +148,8 @@ export const presentationRequest = async () => {
   presentationConfig.callback.url = `${host}/api/issuer/presentation-request-callback`;
   // セッションidを入れてコールバック側へ引き継ぐ
   presentationConfig.callback.state = "123";
-  presentationConfig.presentation.requestedCredentials[0].type = type;
+  presentationConfig.presentation.requestedCredentials[0].type =
+    "https://w3id.org/openbadges/v2";
   presentationConfig.presentation.requestedCredentials[0].acceptedIssuers = [
     authority,
   ];
