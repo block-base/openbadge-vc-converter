@@ -16,16 +16,22 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  const base64ImageWithoutPrefix = req.body.file.split(",")[1];
+  const { email, file } = req.body;
+  const base64ImageWithoutPrefix = file.split(",")[1];
   const openBadgeMetadata = await extractOpenBadgeMetadataFromImage(
     base64ImageWithoutPrefix
   );
-  const result = await validateOpenBadge(openBadgeMetadata);
+  const result = await validateOpenBadge(email, openBadgeMetadata);
   if (!result) {
     throw new Error("OpenBadge invalid");
   }
+
   const manifestURL = await prepareIssueRequest(openBadgeMetadata);
-  const { pin, url } = await issueRequest(manifestURL, openBadgeMetadata);
+  const { pin, url } = await issueRequest(
+    manifestURL,
+    openBadgeMetadata,
+    email
+  );
   res.status(200).json({
     pin,
     url,

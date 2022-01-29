@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import axios from "axios";
 const pngitxt = require("png-itxt");
 const Through = require("stream").PassThrough;
@@ -21,7 +22,18 @@ export const extractOpenBadgeMetadataFromImage = (imageString: string) => {
   });
 };
 
-export const validateOpenBadge = async (openBadgeMetadata: any) => {
+export const validateOpenBadge = async (
+  email: string,
+  openBadgeMetadata: any
+) => {
+  const [, expectedEmailHash] = openBadgeMetadata.recipient.identity.split("$");
+  const inputEmailHash = crypto
+    .createHash("sha256")
+    .update(email)
+    .digest("hex");
+  if (inputEmailHash !== expectedEmailHash) {
+    return false;
+  }
   const { data } = await axios.post(
     openBadgeVerifierURL,
     {
