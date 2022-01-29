@@ -68,9 +68,15 @@ const prepareIssueRequest = async (openBadgeMetadata: any): Promise<string> => {
   // TODO:
   // OpenBadgeから取得したIssuer、CredentialType、イメージ画像の情報を元にrulesおよびdisplayファイルを動的に生成、Azure Storage APIを使ってストレージへアップロード
   // contractエンドポイントへ必要な情報を投げ込んで動的にManifestを作成
-  const manifestId =
-    "https://beta.did.msidentity.com/v1.0/f88bec5c-c13f-4f27-972f-72540d188693/verifiableCredential/contracts/CIDPROCertifiedFoundationLevel";
-  return manifestId;
+  switch (criteria.id) {
+    case "https://www.credly.com/org/idpro/badge/idpro-member":
+      return "https://beta.did.msidentity.com/v1.0/f88bec5c-c13f-4f27-972f-72540d188693/verifiableCredential/contracts/IDProMember";
+    case "https://www.credly.com/org/idpro/badge/cidpro-exam-writer":
+      return "https://beta.did.msidentity.com/v1.0/f88bec5c-c13f-4f27-972f-72540d188693/verifiableCredential/contracts/CIDProItemWriter";
+    case "https://www.credly.com/org/idpro/badge/cidpro-certified-foundation-level":
+    default:
+      return "https://beta.did.msidentity.com/v1.0/f88bec5c-c13f-4f27-972f-72540d188693/verifiableCredential/contracts/CIDPROCertifiedFoundationLevel";
+  }
 };
 const issueRequest = async (manifestId: string, openBadgeMetadata: any) => {
   // TODO:
