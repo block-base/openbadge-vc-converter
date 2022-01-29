@@ -68,7 +68,8 @@ export const prepareIssueRequest = async (
 
 export const issueRequest = async (
   manifestId: string,
-  openBadgeMetadata: any
+  openBadgeMetadata: any,
+  email: string
 ) => {
   // TODO:
   // manifestとアクセストークンを元にazureにリクエストを投げる
@@ -94,7 +95,9 @@ export const issueRequest = async (
   // openbadge
   const { data } = await axios.get(openBadgeMetadata.badge);
 
+  issuanceConfig.issuance.claims.email = email;
   issuanceConfig.issuance.claims.openbadge = JSON.stringify(data);
+
   issuanceConfig.registration.clientName = clientName;
   issuanceConfig.authority = authority;
   issuanceConfig.callback.url = `${host}api/issuer/issuance-request-callback`;
