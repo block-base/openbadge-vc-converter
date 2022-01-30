@@ -4,7 +4,7 @@
 
 https://openbadge-vc-converter.vercel.app/
 
-use local
+local development
 
 ```
 yarn

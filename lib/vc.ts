@@ -99,6 +99,8 @@ export const issueRequest = async (
   // openbadge
   const { data } = await axios.get(openBadgeMetadata.badge);
 
+  console.log(sessionId);
+
   issuanceConfig.issuance.pin.value = pin.toString();
   issuanceConfig.issuance.claims.email = email;
   issuanceConfig.issuance.claims.openbadge = JSON.stringify(data);

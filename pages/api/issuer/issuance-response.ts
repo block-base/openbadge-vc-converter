@@ -1,22 +1,20 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import redis from "../../../lib/redis";
+import { Session, withSession } from "../../../lib/session";
+import { IssuanceStatus } from "../../../types/status";
 
 type Data = {
-  status: number;
-  message: string;
+  status: IssuanceStatus;
 };
 
 export default async function handler(
-  req: NextApiRequest,
+  req: NextApiRequest & Session,
   res: NextApiResponse<Data>
 ) {
-  // - request_retrieved
-  // - issuance_successful
-  const response = await redis.get(req.query.id as string);
-  console.log(response);
-
+  await withSession(req, res);
+  console.log(req.session.id);
+  const response = await redis.get(req.session.id as string);
   res.status(200).json({
-    status: 0,
-    message: "ok",
+    status: response as IssuanceStatus,
   });
 }
