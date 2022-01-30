@@ -29,7 +29,7 @@ const Home: NextPage = () => {
       console.log(status);
       if (status === "request_retrieved") {
         setQrCodeStatus("scanned");
-      } else if (status === "presentation_successful") {
+      } else if (status === "presentation_verified") {
         setQrCodeStatus("success");
       }
     });

@@ -5,4 +5,4 @@ export type IssuanceStatus = null | "request_retrieved" | "issuance_successful";
 export type PresentationStatus =
   | null
   | "request_retrieved"
-  | "presentation_successful";
+  | "presentation_verified";
