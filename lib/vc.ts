@@ -131,7 +131,7 @@ export const issueRequest = async (
   return { pin, url };
 };
 
-export const presentationRequest = async () => {
+export const presentationRequest = async (sessionId: string) => {
   let accessToken = "";
   try {
     const result = await msalCca.acquireTokenByClientCredential(
@@ -147,7 +147,7 @@ export const presentationRequest = async () => {
   presentationConfig.authority = authority;
   presentationConfig.callback.url = `${host}api/verifier/presentation-request-callback`;
   // セッションidを入れてコールバック側へ引き継ぐ
-  presentationConfig.callback.state = "123";
+  presentationConfig.callback.state = sessionId;
   presentationConfig.presentation.requestedCredentials[0].type = "OpenBadgeV2";
   presentationConfig.presentation.requestedCredentials[0].acceptedIssuers = [
     authority,

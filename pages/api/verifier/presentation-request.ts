@@ -12,7 +12,7 @@ export default async function handler(
 ) {
   await withSession(req, res);
   console.log(req.session.id);
-  const { url } = await presentationRequest();
+  const { url } = await presentationRequest(req.session.id);
   res.status(200).json({
     url,
   });
