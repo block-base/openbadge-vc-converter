@@ -1,6 +1,8 @@
 import React from "react";
 
-import { Box, Flex, Link } from "@chakra-ui/react";
+import { Box, Flex, Link, Text } from "@chakra-ui/react";
+import NextLink from "next/link";
+import { SERVICE_NAME } from "../configs";
 
 export const Header: React.VFC = () => {
   return (
@@ -11,16 +13,22 @@ export const Header: React.VFC = () => {
         justifyContent={"space-between"}
         p={{ base: 8 }}
       >
-        <Link href="/" fontSize={"xl"} fontWeight={"bold"}>
-          OpenBadge & VC Converter
-        </Link>
+        <NextLink href="/">
+          <Link fontSize={"xl"} fontWeight={"bold"}>
+            {SERVICE_NAME}
+          </Link>
+        </NextLink>
         <Flex gap={"16px"}>
-          <Link href="/issue" fontSize={"lg"} fontWeight={"bold"}>
-            Issue
-          </Link>
-          <Link href="/verify" fontSize={"lg"} fontWeight={"bold"}>
-            Verify
-          </Link>
+          <NextLink href="/issue">
+            <Link fontSize={"lg"} fontWeight={"bold"}>
+              Issue
+            </Link>
+          </NextLink>
+          <NextLink href="/verify">
+            <Link fontSize={"lg"} fontWeight={"bold"}>
+              Verify
+            </Link>
+          </NextLink>
         </Flex>
       </Flex>
     </Box>
