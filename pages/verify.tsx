@@ -1,7 +1,7 @@
 import React from "react";
 import type { NextPage } from "next";
 
-import { Button, Text, Box, Heading, Flex, Spinner } from "@chakra-ui/react";
+import { Button, Text, Box, Heading, Flex } from "@chakra-ui/react";
 import { WarningIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import QRCode from "react-qr-code";
 import axios from "axios";
@@ -57,6 +57,7 @@ const Home: NextPage = () => {
     <Layout>
       <Metatag title={pageTitle} description={SERVICE_DESCRITION} />
       <Heading
+        textAlign={"center"}
         fontWeight={600}
         fontSize={{ base: "xl", sm: "2xl", md: "3xl" }}
         lineHeight={"110%"}
@@ -77,7 +78,11 @@ const Home: NextPage = () => {
           </Button>
         </Flex>
       )}
-      {requestStatus == "loading" && <Loading />}
+      {requestStatus == "loading" && (
+        <Flex w="full" align={"center"} direction={"column"}>
+          <Loading />
+        </Flex>
+      )}
       {requestStatus == "failed" && (
         <Flex w="full" align={"center"} direction={"column"}>
           <WarningIcon w={24} h={24} color="red.500" />
@@ -95,13 +100,19 @@ const Home: NextPage = () => {
         </Flex>
       )}
       {requestStatus == "requested" && (
-        <>
+        <Flex w="full" align={"center"} direction={"column"}>
           {qrCodeStatus === "waiting" && (
-            <>
-              <Box mt="4">
-                <QRCode value={url} />
-              </Box>
-            </>
+            <Box p={"4px"}>
+              <Text
+                textAlign={"center"}
+                fontSize="lg"
+                mb="2"
+                fontWeight={"bold"}
+              >
+                MS Authenticator QR
+              </Text>
+              <QRCode value={url} />
+            </Box>
           )}
           {qrCodeStatus === "scanned" && (
             <Text fontSize="lg" mt="8">
@@ -126,7 +137,7 @@ const Home: NextPage = () => {
               </Text>
             </Flex>
           )}
-        </>
+        </Flex>
       )}
     </Layout>
   );

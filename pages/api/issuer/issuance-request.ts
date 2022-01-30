@@ -26,11 +26,10 @@ export default async function handler(
   if (!result) {
     throw new Error("OpenBadge invalid");
   }
-
   await withSession(req, res);
-  console.log(req.session.id);
 
   const manifestURL = await prepareIssueRequest(openBadgeMetadata);
+  console.log(manifestURL);
   const { pin, url } = await issueRequest(
     manifestURL,
     openBadgeMetadata,

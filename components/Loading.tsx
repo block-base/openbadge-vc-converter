@@ -1,8 +1,8 @@
 import React from "react";
-import { Flex, Spinner, Text } from "@chakra-ui/react";
+import { Box, Spinner, Text } from "@chakra-ui/react";
 export const Loading: React.VFC = () => {
   return (
-    <Flex w="full" align={"center"} direction={"column"}>
+    <Box>
       <Spinner
         thickness="4px"
         speed="0.65s"
@@ -11,6 +11,6 @@ export const Loading: React.VFC = () => {
         size="xl"
       />
       <Text mt="4">Loading...</Text>
-    </Flex>
+    </Box>
   );
 };

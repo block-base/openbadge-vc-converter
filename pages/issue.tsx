@@ -12,7 +12,6 @@ import {
   FormControl,
   FormHelperText,
   FormLabel,
-  Spinner,
 } from "@chakra-ui/react";
 import { WarningIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import QRCode from "react-qr-code";
@@ -93,6 +92,7 @@ const Issue: NextPage = () => {
     <Layout>
       <Metatag title={pageTitle} description={SERVICE_DESCRITION} />
       <Heading
+        textAlign={"center"}
         fontWeight={600}
         fontSize={{ base: "xl", sm: "2xl", md: "3xl" }}
         lineHeight={"110%"}
@@ -139,11 +139,15 @@ const Issue: NextPage = () => {
           </Button>
         </FormControl>
       )}
-      {requestStatus == "loading" && <Loading />}
+      {requestStatus == "loading" && (
+        <Flex w="full" align={"center"} direction={"column"}>
+          <Loading />
+        </Flex>
+      )}
       {requestStatus == "failed" && (
         <Flex w="full" align={"center"} direction={"column"}>
           <WarningIcon w={24} h={24} color="red.500" />
-          <Text my="4">Verification failed. Reason: </Text>
+          <Text my="4">Verification failed </Text>
           <Button
             w="full"
             colorScheme="blue"
@@ -158,23 +162,31 @@ const Issue: NextPage = () => {
       )}
       {requestStatus == "requested" && (
         <Flex w="full" align={"center"} direction={"column"}>
-          <Image src={image} width="2xs" height="auto" alt=""></Image>
-          <CheckCircleIcon mt="8" w={24} h={24} color="green.500" />
-          <Text align="center" fontSize="lg" mt="2">
+          <CheckCircleIcon mt="8" w={8} h={8} color="green.500" />
+          <Text mb="8" align="center" fontSize="sm" mt="2">
             OpenBadge verified
           </Text>
-          <Text fontSize="lg" mt="8">
-            Read this QR with MS Authenticator
-          </Text>
+
           {qrCodeStatus === "waiting" && (
-            <>
-              <Box mt="4">
-                <QRCode value={url} />
-              </Box>
-              <Box mt="4">
-                <Text>PIN: {pin}</Text>
-              </Box>
-            </>
+            <Box p={"4px"}>
+              <Text
+                textAlign={"center"}
+                fontSize="lg"
+                mb="2"
+                fontWeight={"bold"}
+              >
+                MS Authenticator QR
+              </Text>
+              <QRCode value={url} />
+              <Text
+                mt="8px"
+                textAlign={"center"}
+                fontSize="xl"
+                fontWeight={"bold"}
+              >
+                PIN: {pin}
+              </Text>
+            </Box>
           )}
           {qrCodeStatus === "scanned" && (
             <Text fontSize="lg" mt="8">
