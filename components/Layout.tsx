@@ -6,17 +6,25 @@ import { Flex, Box, Container, Stack } from "@chakra-ui/react";
 
 export interface LayoutProps {
   children: React.ReactNode;
+  maxW?: string;
+  textAlign?: "center";
+  align?: string;
 }
 
-export const Layout: React.VFC<LayoutProps> = ({ children }) => {
+export const Layout: React.VFC<LayoutProps> = ({
+  children,
+  maxW,
+  textAlign,
+  align,
+}) => {
   return (
     <Flex minHeight={"100vh"} direction={"column"}>
       <Header />
       <Box flex={1}>
-        <Container maxW={"5xl"}>
+        <Container maxW={maxW}>
           <Stack
-            textAlign={"center"}
-            align={"center"}
+            textAlign={textAlign}
+            align={align}
             spacing={{ base: 8, md: 10 }}
             py={{ base: 20, md: 28 }}
           >

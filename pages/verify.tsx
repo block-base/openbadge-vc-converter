@@ -9,6 +9,7 @@ import { QRCodeStatus, RequestStatus } from "../types/status";
 import { Layout } from "../components/Layout";
 import { SERVICE_DESCRITION, SERVICE_NAME } from "../configs";
 import { Metatag } from "../components/Metatag";
+import { Loading } from "../components/Loading";
 
 const Home: NextPage = () => {
   const pageTitle = `${SERVICE_NAME} - Verifier`;
@@ -55,36 +56,28 @@ const Home: NextPage = () => {
   return (
     <Layout>
       <Metatag title={pageTitle} description={SERVICE_DESCRITION} />
-
-      <Heading>{pageTitle}</Heading>
-
+      <Heading
+        fontWeight={600}
+        fontSize={{ base: "xl", sm: "2xl", md: "3xl" }}
+        lineHeight={"110%"}
+      >
+        {pageTitle}
+      </Heading>
       {requestStatus == "waiting" && (
-        <>
-          <Flex w="full" align={"center"} direction={"column"}>
-            <Text>Get a Verify QR Code and present your VC</Text>
-            <Button
-              w="full"
-              my="4"
-              colorScheme="teal"
-              onClick={() => requestPresentation()}
-            >
-              Get a Verify QR Code
-            </Button>
-          </Flex>
-        </>
-      )}
-      {requestStatus == "loading" && (
         <Flex w="full" align={"center"} direction={"column"}>
-          <Spinner
-            thickness="4px"
-            speed="0.65s"
-            emptyColor="gray.200"
-            color="blue.500"
-            size="xl"
-          />
-          <Text mt="4">Loading...</Text>
+          <Button
+            w="full"
+            my="4"
+            colorScheme="green"
+            onClick={() => requestPresentation()}
+            bg={"green.400"}
+            _hover={{ bg: "green.500" }}
+          >
+            Get a Verify QR Code
+          </Button>
         </Flex>
       )}
+      {requestStatus == "loading" && <Loading />}
       {requestStatus == "failed" && (
         <Flex w="full" align={"center"} direction={"column"}>
           <WarningIcon w={24} h={24} color="red.500" />
@@ -94,6 +87,8 @@ const Home: NextPage = () => {
             colorScheme="teal"
             my="4"
             onClick={() => setRequestStatus("waiting")}
+            bg={"green.400"}
+            _hover={{ bg: "green.500" }}
           >
             Try again
           </Button>

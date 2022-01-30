@@ -9,7 +9,7 @@ import NextLink from "next/link";
 
 const Home: NextPage = () => {
   return (
-    <Layout>
+    <Layout maxW="5xl" textAlign="center" align="center">
       <Metatag title={SERVICE_NAME} description={SERVICE_DESCRITION} />
       <Heading
         fontWeight={600}

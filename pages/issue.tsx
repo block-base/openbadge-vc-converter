@@ -9,8 +9,10 @@ import {
   Flex,
   Image,
   Input,
+  FormControl,
+  FormHelperText,
+  FormLabel,
   Spinner,
-  Stack,
 } from "@chakra-ui/react";
 import { WarningIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import QRCode from "react-qr-code";
@@ -19,8 +21,9 @@ import { QRCodeStatus, RequestStatus } from "../types/status";
 import { Layout } from "../components/Layout";
 import { SERVICE_DESCRITION, SERVICE_NAME } from "../configs";
 import { Metatag } from "../components/Metatag";
+import { Loading } from "../components/Loading";
 
-const Home: NextPage = () => {
+const Issue: NextPage = () => {
   const pageTitle = `${SERVICE_NAME} - Issuer`;
 
   const [requestStatus, setRequestStatus] =
@@ -38,8 +41,7 @@ const Home: NextPage = () => {
     setEmail(e.target.value);
   };
 
-  const requestIssuance = async (event: any) => {
-    event.preventDefault();
+  const requestIssuance = async () => {
     setRequestStatus("loading");
     axios
       .post("/api/issuer/issuance-request", {
@@ -78,7 +80,6 @@ const Home: NextPage = () => {
     if (files.length > 0) {
       const file = files[0];
       const reader = new FileReader();
-
       reader.onload = (e) => {
         setImage(reader.result as string);
       };
@@ -91,53 +92,54 @@ const Home: NextPage = () => {
   return (
     <Layout>
       <Metatag title={pageTitle} description={SERVICE_DESCRITION} />
-      <Heading>{pageTitle}</Heading>
+      <Heading
+        fontWeight={600}
+        fontSize={{ base: "xl", sm: "2xl", md: "3xl" }}
+        lineHeight={"110%"}
+      >
+        {pageTitle}
+      </Heading>
       {requestStatus == "waiting" && (
-        <>
-          <Text>Input your OpenBadge png/svg</Text>
-          <Box my="8">
-            <form onSubmit={requestIssuance}>
-              <Input
-                mb="8"
-                value={email}
-                placeholder="email"
-                onChange={handleEmailChange}
-              />
-
-              <input
-                type="file"
-                name="image"
-                onChange={(e) => {
-                  uploadPicture(e);
-                }}
-              />
-              {image ? <Image src={image} w="sm" alt=""></Image> : <></>}
-              <br />
-              <Button
-                my="4"
-                w="full"
-                colorScheme="blue"
-                type="submit"
-                name="upload"
-              >
-                Upload
-              </Button>
-            </form>
+        <FormControl>
+          <Box mb="8px">
+            <FormLabel htmlFor="email">Email address</FormLabel>
+            <Input
+              value={email}
+              name="email"
+              placeholder="email"
+              onChange={handleEmailChange}
+            />
+            <FormHelperText>
+              Email is validated with openbadge recipients
+            </FormHelperText>
           </Box>
-        </>
+          <Box mb="8px">
+            <FormLabel htmlFor="image">OpenBadge</FormLabel>
+            <input
+              type="file"
+              name="image"
+              onChange={(e) => {
+                uploadPicture(e);
+              }}
+            />
+            <FormHelperText>PNG and SVG are supported.</FormHelperText>
+          </Box>
+          {image && <Image src={image} w="sm" alt="openbadge_preview"></Image>}
+          <Button
+            my="4"
+            w="full"
+            colorScheme="green"
+            type="submit"
+            name="upload"
+            onClick={requestIssuance}
+            bg={"green.400"}
+            _hover={{ bg: "green.500" }}
+          >
+            Upload
+          </Button>
+        </FormControl>
       )}
-      {requestStatus == "loading" && (
-        <Flex w="full" align={"center"} direction={"column"}>
-          <Spinner
-            thickness="4px"
-            speed="0.65s"
-            emptyColor="gray.200"
-            color="blue.500"
-            size="xl"
-          />
-          <Text mt="4">Loading...</Text>
-        </Flex>
-      )}
+      {requestStatus == "loading" && <Loading />}
       {requestStatus == "failed" && (
         <Flex w="full" align={"center"} direction={"column"}>
           <WarningIcon w={24} h={24} color="red.500" />
@@ -147,47 +149,47 @@ const Home: NextPage = () => {
             colorScheme="blue"
             my="4"
             onClick={() => setRequestStatus("waiting")}
+            bg={"green.400"}
+            _hover={{ bg: "green.500" }}
           >
             Try again
           </Button>
         </Flex>
       )}
       {requestStatus == "requested" && (
-        <>
-          <Flex w="full" align={"center"} direction={"column"}>
-            <Image src={image} width="2xs" height="auto" alt=""></Image>
-            <CheckCircleIcon mt="8" w={24} h={24} color="green.500" />
-            <Text align="center" fontSize="lg" mt="2">
-              OpenBadge verified
-            </Text>
+        <Flex w="full" align={"center"} direction={"column"}>
+          <Image src={image} width="2xs" height="auto" alt=""></Image>
+          <CheckCircleIcon mt="8" w={24} h={24} color="green.500" />
+          <Text align="center" fontSize="lg" mt="2">
+            OpenBadge verified
+          </Text>
+          <Text fontSize="lg" mt="8">
+            Read this QR with MS Authenticator
+          </Text>
+          {qrCodeStatus === "waiting" && (
+            <>
+              <Box mt="4">
+                <QRCode value={url} />
+              </Box>
+              <Box mt="4">
+                <Text>PIN: {pin}</Text>
+              </Box>
+            </>
+          )}
+          {qrCodeStatus === "scanned" && (
             <Text fontSize="lg" mt="8">
-              Read this QR with MS Authenticator
+              Scanned
             </Text>
-            {qrCodeStatus === "waiting" && (
-              <>
-                <Box mt="4">
-                  <QRCode value={url} />
-                </Box>
-                <Box mt="4">
-                  <Text>PIN: {pin}</Text>
-                </Box>
-              </>
-            )}
-            {qrCodeStatus === "scanned" && (
-              <Text fontSize="lg" mt="8">
-                Scanned
-              </Text>
-            )}
-            {qrCodeStatus === "success" && (
-              <Text fontSize="lg" mt="8">
-                Issued!!
-              </Text>
-            )}
-          </Flex>
-        </>
+          )}
+          {qrCodeStatus === "success" && (
+            <Text fontSize="lg" mt="8">
+              Issued!!
+            </Text>
+          )}
+        </Flex>
       )}
     </Layout>
   );
 };
 
-export default Home;
+export default Issue;
