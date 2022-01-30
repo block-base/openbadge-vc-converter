@@ -12,7 +12,6 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   await withSession(req, res);
-  console.log(req.session.id);
   const response = await redis.get(req.session.id as string);
   res.status(200).json({
     status: response as IssuanceStatus,

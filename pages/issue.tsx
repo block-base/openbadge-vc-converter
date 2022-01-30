@@ -162,13 +162,21 @@ const Issue: NextPage = () => {
       )}
       {requestStatus == "requested" && (
         <Flex w="full" align={"center"} direction={"column"}>
-          <CheckCircleIcon mt="8" w={8} h={8} color="green.500" />
-          <Text mb="8" align="center" fontSize="sm" mt="2">
-            OpenBadge verified
-          </Text>
-
           {qrCodeStatus === "waiting" && (
             <Box p={"4px"}>
+              <Flex w="full" align={"center"} direction={"column"}>
+                <CheckCircleIcon
+                  textAlign={"center"}
+                  mt="8"
+                  w={8}
+                  h={8}
+                  color="green.500"
+                />
+                <Text mb="8" align="center" fontSize="sm" mt="2">
+                  OpenBadge verified
+                </Text>
+              </Flex>
+
               <Text
                 textAlign={"center"}
                 fontSize="lg"
@@ -190,12 +198,12 @@ const Issue: NextPage = () => {
           )}
           {qrCodeStatus === "scanned" && (
             <Text fontSize="lg" mt="8">
-              Scanned
+              QR code scanned...
             </Text>
           )}
           {qrCodeStatus === "success" && (
             <Text fontSize="lg" mt="8">
-              Issued!!
+              VC Issued, check MS Authenticator
             </Text>
           )}
         </Flex>
