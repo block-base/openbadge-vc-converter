@@ -116,21 +116,11 @@ const Home: NextPage = () => {
           )}
           {qrCodeStatus === "scanned" && (
             <Text fontSize="lg" mt="8">
-              Scanned
+              QR code scanned...
             </Text>
           )}
           {qrCodeStatus === "success" && (
             <Flex w="full" align={"center"} direction={"column"}>
-              {/* {metadata.image.id ? (
-                  <Image
-                    src={metadata.image.id}
-                    width="2xs"
-                    height="auto"
-                    alt=""
-                  ></Image>
-                ) : (
-                  <></>
-                )} */}
               <CheckCircleIcon mt="8" w={24} h={24} color="green.500" />
               <Text align="center" fontSize="lg" mt="2">
                 Credential Verified
