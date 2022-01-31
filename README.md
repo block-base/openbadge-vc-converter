@@ -9,6 +9,10 @@
 <img width="1440" alt="Screen Shot 2022-01-31 at 19 18 11" src="https://user-images.githubusercontent.com/38043569/151776195-388a0cb5-ef80-49ac-8ebb-a5ac9307f970.png">
 
 
+### Issued VC contains OpenBadge
+<img width="767" alt="Screen Shot 2022-01-31 at 19 24 05" src="https://user-images.githubusercontent.com/38043569/151777055-f2550f62-4275-4e16-84c0-afa67a9343c1.png">
+
+
 ## DEMO
 https://openbadge-vc-converter.vercel.app/
 
@@ -27,3 +31,5 @@ yarn dev
   - https://openbadgesvalidator.imsglobal.org/results
 - Check following document for the detail
   - https://github.com/IMSGlobal/openbadges-validator-core
+
+* Currently above API is not stable, so for the better demo, the verification code is comment outed.
