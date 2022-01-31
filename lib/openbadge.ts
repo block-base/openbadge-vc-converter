@@ -34,6 +34,9 @@ export const validateOpenBadge = async (
   if (inputEmailHash !== expectedEmailHash) {
     return false;
   }
+  
+  // NOTE: We tested this code is working fine, but Currently this API is not stable, so for the better demo, the verification code is comment outed.    
+  
   // const { data } = await axios.post(
   //   openBadgeVerifierURL,
   //   {
