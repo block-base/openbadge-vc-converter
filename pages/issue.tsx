@@ -12,6 +12,9 @@ import {
   FormControl,
   FormHelperText,
   FormLabel,
+  List,
+  ListItem,
+  ListIcon,
 } from "@chakra-ui/react";
 import { WarningIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import QRCode from "react-qr-code";
@@ -164,7 +167,7 @@ const Issue: NextPage = () => {
         <Flex w="full" align={"center"} direction={"column"}>
           {qrCodeStatus === "waiting" && (
             <Box p={"4px"}>
-              <Flex w="full" align={"center"} direction={"column"}>
+              <Flex mb="8" w="full" align={"center"} direction={"column"}>
                 <CheckCircleIcon
                   textAlign={"center"}
                   mt="8"
@@ -172,28 +175,39 @@ const Issue: NextPage = () => {
                   h={8}
                   color="green.500"
                 />
-                <Text mb="8" align="center" fontSize="sm" mt="2">
+                <Text mb="4" align="center" fontSize="sm" mt="2">
                   OpenBadge verified
                 </Text>
+                <List spacing={3}>
+                  <ListItem>
+                    <ListIcon as={CheckCircleIcon} color="green.500" />
+                    Input Email is verified with openbadge recipients
+                  </ListItem>
+                  <ListItem>
+                    <ListIcon as={CheckCircleIcon} color="green.500" />
+                    OpenBadge is validated by IMS Global OpanBadge Validator
+                  </ListItem>
+                </List>
               </Flex>
-
-              <Text
-                textAlign={"center"}
-                fontSize="lg"
-                mb="2"
-                fontWeight={"bold"}
-              >
-                MS Authenticator QR
-              </Text>
-              <QRCode value={url} />
-              <Text
-                mt="8px"
-                textAlign={"center"}
-                fontSize="xl"
-                fontWeight={"bold"}
-              >
-                PIN: {pin}
-              </Text>
+              <Flex w="full" align={"center"} direction={"column"}>
+                <Text
+                  textAlign={"center"}
+                  fontSize="lg"
+                  mb="2"
+                  fontWeight={"bold"}
+                >
+                  MS Authenticator QR
+                </Text>
+                <QRCode value={url} />
+                <Text
+                  mt="8px"
+                  textAlign={"center"}
+                  fontSize="xl"
+                  fontWeight={"bold"}
+                >
+                  PIN: {pin}
+                </Text>
+              </Flex>
             </Box>
           )}
           {qrCodeStatus === "scanned" && (

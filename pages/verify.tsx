@@ -1,7 +1,16 @@
 import React from "react";
 import type { NextPage } from "next";
 
-import { Button, Text, Box, Heading, Flex } from "@chakra-ui/react";
+import {
+  Button,
+  Text,
+  Box,
+  Heading,
+  Flex,
+  ListItem,
+  ListIcon,
+  List,
+} from "@chakra-ui/react";
 import { WarningIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import QRCode from "react-qr-code";
 import axios from "axios";
@@ -121,10 +130,22 @@ const Home: NextPage = () => {
           )}
           {qrCodeStatus === "success" && (
             <Flex w="full" align={"center"} direction={"column"}>
-              <CheckCircleIcon mt="8" w={24} h={24} color="green.500" />
-              <Text align="center" fontSize="lg" mt="2">
-                Credential Verified
+              <CheckCircleIcon
+                textAlign={"center"}
+                mt="8"
+                w={8}
+                h={8}
+                color="green.500"
+              />
+              <Text mb="4" align="center" fontSize="sm" mt="2">
+                OpenBadge verified
               </Text>
+              <List>
+                <ListItem>
+                  <ListIcon as={CheckCircleIcon} color="green.500" />
+                  OpenBadge is validated by IMS Global OpanBadge Validator
+                </ListItem>
+              </List>
             </Flex>
           )}
         </Flex>
