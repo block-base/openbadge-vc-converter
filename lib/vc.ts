@@ -9,8 +9,6 @@ const authority =
 const host = "https://openbadge-vc-converter.vercel.app/";
 
 const clientName = "OpenBadge to Verifiable Credentials Gateway";
-const type =
-  '["https://www.credly.com/org/idpro/badge/cidpro-certified-foundation-level","https://w3id.org/openbadges/v2"]';
 
 const msal = require("@azure/msal-node");
 
@@ -57,6 +55,8 @@ export const prepareIssueRequest = async (
   // createManifest()
 
   switch (criteria.id) {
+    case "https://www.credly.com/org/project-management-institute/badge/project-management-professional-pmp":
+      return "https://beta.did.msidentity.com/v1.0/f88bec5c-c13f-4f27-972f-72540d188693/verifiableCredential/contracts/PMP";
     case "https://www.credly.com/org/idpro/badge/idpro-member":
       return "https://beta.did.msidentity.com/v1.0/f88bec5c-c13f-4f27-972f-72540d188693/verifiableCredential/contracts/IDProMember";
     case "https://www.credly.com/org/idpro/badge/cidpro-exam-writer":
@@ -111,7 +111,6 @@ export const issueRequest = async (
   // セッションidを入れてコールバック側へ引き継ぐ
   issuanceConfig.callback.state = sessionId;
   issuanceConfig.issuance.manifest = manifestId;
-  issuanceConfig.issuance.type = type;
 
   const payload = JSON.stringify(issuanceConfig);
 

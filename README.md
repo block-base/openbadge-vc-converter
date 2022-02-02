@@ -38,4 +38,6 @@ yarn dev
   - https://github.com/IMSGlobal/openbadges-validator-core
 
 * Currently above API is not stable, so for the better demo, the verification code is comment outed.
-* Currently dynamic VC definition does not work and only accepts the Open Bages which [IDPro](https://idpro.org/) issues.
+* Currently dynamic VC definition does not work and only accepts following Open Badges,
+  - [IDPro](https://idpro.org/)
+  - [Project Management Professional](https://www.pmi.org/)
